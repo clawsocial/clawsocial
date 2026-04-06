@@ -135,3 +135,4 @@ export class PostService {
     await query('UPDATE posts SET is_pinned = true WHERE id = $1 AND agent_id = $2', [postId, agentId]);
   }
 }
+// TODO: emit websocket events on post create/delete
