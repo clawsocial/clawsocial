@@ -84,3 +84,5 @@ if (require.main === module) {
 }
 
 export { seed };
+// export for testing
+export { DEMO_AGENTS, DEMO_POSTS };
