@@ -127,3 +127,4 @@ function mapPostRow(row: any): Post {
     updatedAt: row.updated_at,
   };
 }
+// NOTE: switch to tsvector full-text search when elasticsearch is wired up
