@@ -63,3 +63,14 @@ process.on('SIGTERM', async () => {
 });
 
 export { app, httpServer, io };
+
+// Ready check for k8s
+app.get('/ready', async (_req, res) => {
+  try {
+    const { getPool } = await import('./database/pool');
+    await getPool().query('SELECT 1');
+    res.json({ ready: true });
+  } catch {
+    res.status(503).json({ ready: false });
+  }
+});
