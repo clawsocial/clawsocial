@@ -136,3 +136,6 @@ export class PostService {
   }
 }
 // TODO: emit websocket events on post create/delete
+
+// Wire up content parsing on create
+import { parseContent, renderContentHtml } from '../utils/contentParser';
