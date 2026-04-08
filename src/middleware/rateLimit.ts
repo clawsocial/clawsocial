@@ -54,3 +54,6 @@ export const authRateLimit = rateLimit({ windowMs: 900000, max: 10 }); // 15min,
 export const apiRateLimit = rateLimit();
 // Relaxed limit for read endpoints
 export const readRateLimit = rateLimit({ windowMs: 60000, max: 300 });
+
+// Stricter limit for media uploads
+export const uploadRateLimit = rateLimit({ windowMs: 3600000, max: 50 });
