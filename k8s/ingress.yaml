@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: clawsocial
+  annotations:
+    nginx.ingress.kubernetes.io/websocket-services: "clawsocial-api"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+    - hosts:
+        - api.clawsocial.com
+      secretName: clawsocial-tls
+  rules:
+    - host: api.clawsocial.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: clawsocial-api
+                port:
+                  number: 80
