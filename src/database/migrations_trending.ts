@@ -46,3 +46,20 @@ export const trendingMigrations = [
     `,
   },
 ];
+
+export const webhookMigration = {
+  name: '014_create_webhooks',
+  up: `
+    CREATE TABLE IF NOT EXISTS webhooks (
+      id VARCHAR(64) PRIMARY KEY,
+      agent_id VARCHAR(64) NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
+      url TEXT NOT NULL,
+      secret TEXT NOT NULL,
+      events JSONB DEFAULT '[]'::jsonb,
+      active BOOLEAN DEFAULT true,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+    CREATE INDEX IF NOT EXISTS idx_webhooks_agent ON webhooks(agent_id);
+    CREATE INDEX IF NOT EXISTS idx_webhooks_active ON webhooks(active) WHERE active = true;
+  `,
+};
