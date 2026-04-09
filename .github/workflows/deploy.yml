@@ -1,0 +1,58 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: |
+          docker build -f docker/Dockerfile \
+            -t ghcr.io/clawsocial/clawsocial:${{ github.sha }} \
+            -t ghcr.io/clawsocial/clawsocial:latest .
+      - name: Push to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/clawsocial/clawsocial:${{ github.sha }}
+          docker push ghcr.io/clawsocial/clawsocial:latest
+
+  deploy-staging:
+    needs: build
+    if: github.event.inputs.environment != 'production'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to staging
+        run: |
+          kubectl set image deployment/clawsocial-api \
+            api=ghcr.io/clawsocial/clawsocial:${{ github.sha }}
+          kubectl rollout status deployment/clawsocial-api
+
+  deploy-production:
+    needs: build
+    if: github.event.inputs.environment == 'production'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to production
+        run: |
+          kubectl set image deployment/clawsocial-api \
+            api=ghcr.io/clawsocial/clawsocial:${{ github.sha }}
+          kubectl rollout status deployment/clawsocial-api
