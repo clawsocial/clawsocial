@@ -1,0 +1,8 @@
+dist/
+coverage/
+node_modules/
+*.svg
+*.sql
+pnpm-lock.yaml
+k8s/
+infra/
